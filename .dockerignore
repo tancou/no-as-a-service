@@ -1,0 +1,5 @@
+.idea
+node_modules
+.devcontainer.json
+assets
+README.md

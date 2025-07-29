@@ -27,7 +27,57 @@ app.get('/no', (req, res) => {
   res.json({ reason });
 });
 
+app.get('/', (req, res) => {
+  const title = 'Where ticket?';
+  const description = reasons[Math.floor(Math.random() * reasons.length)];
+  const imageUrl = req.query.image || 'https://example.com/default-image.jpg';
+
+  const html = `
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+      <meta charset="UTF-8">
+      <meta property="og:title" content="${title}" />
+      <meta property="og:description" content="${description}" />
+<!--      <meta property="og:image" content="${imageUrl}" />-->
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="${req.protocol}://${req.get('host')}${req.originalUrl}" />
+      <meta name="twitter:card" content="summary_large_image">
+      <meta name="twitter:title" content="${title}">
+      <meta name="twitter:description" content="${description}">
+<!--      <meta name="twitter:image" content="${imageUrl}">-->
+      <title>${title}</title>
+    </head>
+    <body>
+      <h1>${title}</h1>
+      <p>${description}</p>
+<!--      <img src="${imageUrl}" alt="Image de preview" style="max-width:100%;">-->
+    </body>
+    </html>
+  `;
+
+  res.setHeader('Content-Type', 'text/html');
+  res.send(html);
+});
+
 // Start server
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`No-as-a-Service is running on port ${PORT}`);
+});
+
+// Gestion propre des signaux
+process.on('SIGINT', () => {
+  console.log('SIGINT reçu. Fermeture du serveur...');
+  server.close(() => {
+    console.log('Serveur arrêté proprement.');
+    process.exit(0);
+  });
+});
+
+process.on('SIGTERM', () => {
+  console.log('SIGTERM reçu. Fermeture du serveur...');
+  server.close(() => {
+    console.log('Serveur arrêté proprement.');
+    process.exit(0);
+  });
 });
