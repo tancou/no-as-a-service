@@ -12,7 +12,7 @@ COPY --chown=node:node package*.json ./
 
 RUN npm ci
 
-COPY --chown=node:node index.js reasons.json ./
+COPY --chown=node:node index.js *.json ./
 
 EXPOSE 3000
 
