@@ -21,6 +21,15 @@ const limiter = rateLimit({
 
 app.use(limiter);
 
+function generateId(length = 6) {
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return result;
+}
+
 // Random rejection reason endpoint
 app.get('/no', (req, res) => {
   const reason = reasons[Math.floor(Math.random() * reasons.length)];
@@ -33,8 +42,7 @@ app.get('/', (req, res) => {
   if (!req.query.u) {
     const url = new URL(`${req.protocol}://${req.get('host')}${req.originalUrl}`);
     // Génère un hash de 6 caractères alphanumériques minuscules
-    const hash = crypto.randomBytes(3).toString('hex'); // 3 bytes = 6 caractères hex
-    url.searchParams.set('u', hash); // Ajoute un timestamp
+    url.searchParams.set('u', generateId(6)); // Ajoute un timestamp
 
     return res.redirect(302, url.toString());
   }
