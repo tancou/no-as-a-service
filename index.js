@@ -28,6 +28,17 @@ app.get('/no', (req, res) => {
 });
 
 app.get('/', (req, res) => {
+
+  // Vérifie si "ts" est présent dans la query string
+  if (!req.query.u) {
+    const url = new URL(`${req.protocol}://${req.get('host')}${req.originalUrl}`);
+    // Génère un hash de 6 caractères alphanumériques minuscules
+    const hash = crypto.randomBytes(3).toString('hex'); // 3 bytes = 6 caractères hex
+    url.searchParams.set('u', hash); // Ajoute un timestamp
+
+    return res.redirect(302, url.toString());
+  }
+
   const title = 'Where ticket?';
   const description = reasons[Math.floor(Math.random() * reasons.length)];
   const imageUrl = req.query.image || 'https://example.com/default-image.jpg';
