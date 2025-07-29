@@ -8,6 +8,7 @@ const PORT = process.env.PORT || 3000;
 
 // Load reasons from JSON
 const reasons = JSON.parse(fs.readFileSync('./reasons.json', 'utf-8'));
+const titles = JSON.parse(fs.readFileSync('./titles.json', 'utf-8'));
 
 // Rate limiter: 120 requests per minute per IP
 const limiter = rateLimit({
@@ -47,7 +48,7 @@ app.get('/', (req, res) => {
     return res.redirect(302, url.toString());
   }
 
-  const title = 'Where ticket?';
+  const title = titles[Math.floor(Math.random() * titles.length)];
   const description = reasons[Math.floor(Math.random() * reasons.length)];
   const imageUrl = req.query.image || 'https://example.com/default-image.jpg';
 
