@@ -1,6 +1,7 @@
 const express = require('express');
 const rateLimit = require('express-rate-limit');
 const fs = require('fs');
+const crypto = require('crypto');
 
 const app = express();
 app.set('trust proxy', true);
@@ -30,6 +31,13 @@ function generateId(length = 6) {
   }
   return result;
 }
+// Fonction de hachage qui convertit un string en entier
+function hashToInt(str) {
+  // Utilise SHA-1 pour obtenir un buffer fiable
+  const hash = crypto.createHash('sha1').update(str).digest();
+  // On prend les 4 premiers octets pour former un entier positif (32 bits)
+  return hash.readUInt32BE(0);
+}
 
 // Random rejection reason endpoint
 app.get('/no', (req, res) => {
@@ -48,8 +56,12 @@ app.get('/', (req, res) => {
     return res.redirect(302, url.toString());
   }
 
-  const title = titles[Math.floor(Math.random() * titles.length)];
-  const description = reasons[Math.floor(Math.random() * reasons.length)];
+  const u = req.query.u;
+  const hashTitle = hashToInt(u);
+  const hashReasons = hashToInt(u + 'beaucoup_de_sel');
+
+  const title = titles[hashTitle % titles.length];
+  const description = reasons[hashReasons % reasons.length];
   const imageUrl = req.query.image || 'https://example.com/default-image.jpg';
 
   const html = `
